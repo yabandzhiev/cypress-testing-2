@@ -38,4 +38,7 @@
 
 Cypress.Commands.add("loginToApplication", () => {
   cy.visit("/login");
+  cy.get('[placeholder="Email"]').type("artem.bardem16@gmail.com");
+  cy.get('[placeholder="Password"]').type("Cy[ressTest1");
+  cy.get("form").submit();
 });
