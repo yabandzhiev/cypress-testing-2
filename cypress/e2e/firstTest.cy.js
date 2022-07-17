@@ -1,5 +1,9 @@
-describe('empty spec', () => {
-  it('passes', () => {
-    cy.visit('https://example.cypress.io')
-  })
-})
+describe("Test with backend", () => {
+  beforeEach("login to the app", () => {
+    cy.loginToApplication();
+  });
+
+  it("should log in", () => {
+    cy.log("yes im logged in");
+  });
+});
