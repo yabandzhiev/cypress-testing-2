@@ -55,14 +55,7 @@ describe("Test with backend", () => {
     });
   });
 
-  it.only("delete a new article in the global feed", () => {
-    const userCredentials = {
-      user: {
-        email: "artem.bardem16@gmail.com",
-        password: "CypressTest1",
-      },
-    };
-
+  it("delete a new article in the global feed", () => {
     const bodyRequest = {
       article: {
         tagList: [],
@@ -72,46 +65,36 @@ describe("Test with backend", () => {
       },
     };
 
-    cy.request(
-      "POST",
-      "https://conduit.productionready.io/api/users/login",
-      userCredentials
-    )
-      .its("body")
-      .then((body) => {
-        const token = body.user.token;
-
-        cy.request({
-          url: "https://conduit.productionready.io/api/articles",
-          headers: {
-            Authorization: "Token " + token,
-          },
-          method: "POST",
-          body: bodyRequest,
-        }).then((res) => {
-          expect(res.status).to.equal(200);
-        });
-
-        cy.contains("Global Feed").click();
-        cy.get(".article-preview").first().click();
-        cy.get(".article-actions").contains("Delete Article").click();
-
-        cy.wait(1000);
-        cy.request({
-          url: "https://conduit.productionready.io/api/articles?limit=10&offset=0",
-          headers: {
-            Authorization: "Token " + token,
-          },
-          method: "GET",
-        })
-          .its("body")
-          .then((body) => {
-            console.log(body.articles);
-
-            expect(body.articles[0].title).not.to.equal(
-              "Request from API12333"
-            );
-          });
+    cy.get("@token").then((token) => {
+      cy.request({
+        url: "https://conduit.productionready.io/api/articles",
+        headers: {
+          Authorization: "Token " + token,
+        },
+        method: "POST",
+        body: bodyRequest,
+      }).then((res) => {
+        expect(res.status).to.equal(200);
       });
+
+      cy.contains("Global Feed").click();
+      cy.get(".article-preview").first().click();
+      cy.get(".article-actions").contains("Delete Article").click();
+
+      cy.wait(1000);
+      cy.request({
+        url: "https://conduit.productionready.io/api/articles?limit=10&offset=0",
+        headers: {
+          Authorization: "Token " + token,
+        },
+        method: "GET",
+      })
+        .its("body")
+        .then((body) => {
+          console.log(body.articles);
+
+          expect(body.articles[0].title).not.to.equal("Request from API12333");
+        });
+    });
   });
 });
